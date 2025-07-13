@@ -4,27 +4,27 @@ using EstadosApiNet.Repositories.IRepositories;
 
 namespace EstadosApiNet.Services
 {
-    public class CodigoPostalService : ICodigoPostalService
+    public class PostalCodeService : IPostalCodeService
     {
-        private readonly ICodigoPostalRepository _repository;
+        private readonly IPostalCodeRepository _repository;
 
-        public CodigoPostalService(ICodigoPostalRepository repository)
+        public PostalCodeService(IPostalCodeRepository repository)
         {
             _repository = repository;
         }
 
-        public ApiResponse<object> BuscarPorCodigo(string codigo, bool agrupar = false)
+        public ApiResponse<object> SearchByPostalCode(string code, bool group = false)
         {
-            if (string.IsNullOrWhiteSpace(codigo))
+            if (string.IsNullOrWhiteSpace(code))
                 return ErrorResponse(400, "El código postal no puede estar vacío");
 
-            List<Asentamiento> asentamientos = _repository.GetByCodigo(codigo);
-            if (!asentamientos.Any())
+            List<Settlements> settlements = _repository.GetByCodigo(code);
+            if (!settlements.Any())
                 return ErrorResponse(404, "No se encontraron registros");
 
-            return agrupar
-                ? AgruparRespuesta(asentamientos)
-                : NoAgruparRespuesta(asentamientos);
+            return group
+                ? GroupResponse(settlements)
+                : NotGroupResponse(settlements);
         }
 
         private ApiResponse<object> ErrorResponse(int code, string message)
@@ -38,9 +38,9 @@ namespace EstadosApiNet.Services
             };
         }
 
-        private ApiResponse<object> NoAgruparRespuesta(List<Asentamiento> asentamientos)
+        private ApiResponse<object> NotGroupResponse(List<Settlements> settlements)
         {
-            var response = asentamientos.Select(a => new CodigoPostalNoAgrupadoResponse
+            List<NonGroupedPostalCodeResponse> response = settlements.Select(a => new NonGroupedPostalCodeResponse
             {
                 cp = a.d_codigo,
                 asentamiento = a.d_asenta,
@@ -60,17 +60,17 @@ namespace EstadosApiNet.Services
             };
         }
 
-        private ApiResponse<object> AgruparRespuesta(List<Asentamiento> asentamientos)
+        private ApiResponse<object> GroupResponse(List<Settlements> settlements)
         {
-            Asentamiento primero = asentamientos.First();
-            var response = new CodigoPostalResponse
+            Settlements first = settlements.First();
+            PostalCodeResponse response = new PostalCodeResponse
             {
-                cp = primero.d_codigo,
-                asentamientos = asentamientos.Select(a => a.d_asenta).ToList(),
-                tipos_asentamiento = asentamientos.Select(a => a.d_tipo_asenta).Distinct().ToList(),
-                municipio = primero.D_mnpio,
-                estado = primero.d_estado,
-                ciudad = primero.d_ciudad,
+                cp = first.d_codigo,
+                asentamientos = settlements.Select(a => a.d_asenta).ToList(),
+                tipos_asentamiento = settlements.Select(a => a.d_tipo_asenta).Distinct().ToList(),
+                municipio = first.D_mnpio,
+                estado = first.d_estado,
+                ciudad = first.d_ciudad,
                 pais = "México"
             };
 

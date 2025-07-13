@@ -1,6 +1,6 @@
 namespace EstadosApiNet.Models
 {
-    public class CodigoPostalNoAgrupadoResponse
+    public class NonGroupedPostalCodeResponse
     {
         public string cp { get; set; }
         public string asentamiento { get; set; }

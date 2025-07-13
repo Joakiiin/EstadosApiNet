@@ -5,13 +5,13 @@ using OfficeOpenXml;
 
 namespace EstadosApiNet.Repositories
 {
-    public class CodigoPostalRepository : ICodigoPostalRepository
+    public class PostalCodeRepository : IPostalCodeRepository
     {
-        private static readonly Lazy<Dictionary<string, List<Asentamiento>>> _asentamientosPorCodigo =
-       new Lazy<Dictionary<string, List<Asentamiento>>>(CargarDatos);
-        private static Dictionary<string, List<Asentamiento>> CargarDatos()
+        private static readonly Lazy<Dictionary<string, List<Settlements>>> _settlementsByCode =
+       new Lazy<Dictionary<string, List<Settlements>>>(LoadData);
+        private static Dictionary<string, List<Settlements>> LoadData()
         {
-            Dictionary<string, List<Asentamiento>> datos = new Dictionary<string, List<Asentamiento>>();
+            Dictionary<string, List<Settlements>> data = new Dictionary<string, List<Settlements>>();
             WebHostEnvironmentWrapper env = new WebHostEnvironmentWrapper();
             string filePath = Path.Combine(env.ContentRootPath, "Data", "CPdescarga.xlsx");
 
@@ -23,7 +23,7 @@ namespace EstadosApiNet.Repositories
 
                 for (int row = 2; row <= rowCount; row++)
                 {
-                    Asentamiento asentamiento = new Asentamiento
+                    Settlements settlement = new Settlements
                     {
                         d_codigo = worksheet.Cells[row, 1].Text,
                         d_asenta = worksheet.Cells[row, 2].Text,
@@ -43,24 +43,24 @@ namespace EstadosApiNet.Repositories
                     };
 
                     // Agrupa por código postal
-                    if (!datos.ContainsKey(asentamiento.d_codigo))
+                    if (!data.ContainsKey(settlement.d_codigo))
                     {
-                        datos[asentamiento.d_codigo] = new List<Asentamiento>();
+                        data[settlement.d_codigo] = new List<Settlements>();
                     }
-                    datos[asentamiento.d_codigo].Add(asentamiento);
+                    data[settlement.d_codigo].Add(settlement);
                 }
             }
 
-            return datos;
+            return data;
         }
 
-        public List<Asentamiento> GetByCodigo(string codigo)
+        public List<Settlements> GetByCodigo(string code)
         {
-            if (_asentamientosPorCodigo.Value.TryGetValue(codigo, out List<Asentamiento> asentamientos))
+            if (_settlementsByCode.Value.TryGetValue(code, out List<Settlements> Settlements))
             {
-                return asentamientos;
+                return Settlements;
             }
-            return new List<Asentamiento>();
+            return new List<Settlements>();
         }
     }
 }

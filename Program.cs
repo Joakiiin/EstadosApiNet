@@ -9,8 +9,8 @@ using EstadosApiNet.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Registrar servicios
-builder.Services.AddSingleton<ICodigoPostalRepository, CodigoPostalRepository>();
-builder.Services.AddScoped<ICodigoPostalService, CodigoPostalService>();
+builder.Services.AddSingleton<IPostalCodeRepository, PostalCodeRepository>();
+builder.Services.AddScoped<IPostalCodeService, PostalCodeService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApiVersioning(setup =>

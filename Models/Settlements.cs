@@ -1,6 +1,6 @@
 namespace EstadosApiNet.Models
 {
-    public class Asentamiento
+    public class Settlements
     {
         public string d_codigo { get; set; } = null!;
         public string d_asenta { get; set; } = null!;
