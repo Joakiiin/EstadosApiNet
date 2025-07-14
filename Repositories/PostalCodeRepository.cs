@@ -54,6 +54,58 @@ namespace EstadosApiNet.Repositories
             return data;
         }
 
+        public List<string> SearchPostalCodes(string pattern, int? limit = null)
+        {
+            // Obtenemos todos los códigos postales únicos
+            List<string> allCodes = _settlementsByCode.Value.Keys.ToList();
+
+            // Filtramos por patrón (coincidencia parcial)
+            List<string> filteredCodes = allCodes
+                .Where(code => code.Contains(pattern))
+                .ToList();
+
+            // Aplicamos límite si es necesario
+            return limit.HasValue && limit > 0
+                ? filteredCodes.Take(limit.Value).ToList()
+                : filteredCodes;
+        }
+        public List<string> GetUniqueEstados()
+        {
+            return _settlementsByCode.Value.Values
+                .SelectMany(list => list)
+                .Select(a => a.d_estado)
+                .Distinct()
+                .OrderBy(e => e)
+                .ToList();
+        }
+        public List<string> GetMunicipalitiesByState(string state)
+        {
+            if (string.IsNullOrEmpty(state))
+            {
+                return new List<string>();
+            }
+
+            return _settlementsByCode.Value.Values
+                .SelectMany(list => list)
+                .Where(a => a.d_estado.Equals(state, StringComparison.OrdinalIgnoreCase)) // ¡FILTRO POR ESTADO!
+                .Select(a => a.D_mnpio)
+                .Distinct()
+                .OrderBy(m => m)  // Orden alfabético
+                .ToList();
+        }
+        public List<string> GetPostalCodesByMunicipalities(string municipality)
+        {
+            if (string.IsNullOrEmpty(municipality))
+            {
+                return new List<string>();
+            }
+            return _settlementsByCode.Value.Values
+            .SelectMany(list => list)
+            .Where(a => a.D_mnpio.Equals(municipality, StringComparison.OrdinalIgnoreCase))
+            .Select(a => a.d_codigo)
+            .Distinct()
+            .ToList();
+        }
         public List<Settlements> GetByCodigo(string code)
         {
             if (_settlementsByCode.Value.TryGetValue(code, out List<Settlements> Settlements))

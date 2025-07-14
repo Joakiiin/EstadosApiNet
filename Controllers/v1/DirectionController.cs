@@ -25,5 +25,37 @@ namespace EstadosApiNet.Controllers.v1
             }
             return Ok(result);
         }
+        [HttpGet("search-cp/{pattern}")]
+        public IActionResult SearchPostalCodes(string pattern, [FromQuery] int? limit = null)
+        {
+            ApiResponse<PostalCodeSearchResponse> result = _service.SearchPostalCodes(pattern, limit);
+            return result.error
+                ? StatusCode(result.code_error, result)
+                : Ok(result);
+        }
+        [HttpGet("states")]
+        public IActionResult GetUniqueEstados()
+        {
+            ApiResponse<EstadosResponse> result = _service.GetUniqueEstados();
+            return result.error
+                ? StatusCode(result.code_error, result)
+                : Ok(result);
+        }
+        [HttpGet("get-municipalities-by-state/{state}")]
+        public IActionResult GetMunicipalitiesByState(string state)
+        {
+            ApiResponse<MunicipalitiesResponse> result = _service.GetMunicipalitiesByState(state);
+            return result.error
+                ? StatusCode(result.code_error, result)
+                : Ok(result);
+        }
+        [HttpGet("get-postal-code-by-municipalities/{municipality}")]
+        public IActionResult GetPostalCodeByMunicipalities(string municipality)
+        {
+            ApiResponse<PostalCodeSearchResponse> result = _service.GetPostalCodesByMunicipality(municipality);
+            return result.error
+            ? StatusCode(result.code_error, result)
+            : Ok(result);
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace EstadosApiNet
         {
             OpenApiInfo info = new OpenApiInfo()
             {
-                Title = "Sass System Api",
+                Title = "Mexico Postal Codes API",
                 Version = description.ApiVersion.ToString(),
             };
             if (description.IsDeprecated)
